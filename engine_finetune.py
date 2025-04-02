@@ -45,36 +45,28 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         print('log_dir: {}'.format(log_writer.log_dir))
 
     for data_iter_step, (samples, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
-
-        # we use a per iteration (instead of per epoch) lr scheduler
         if data_iter_step % accum_iter == 0:
             lr_sched.adjust_learning_rate(optimizer, data_iter_step / len(data_loader) + epoch, args)
 
         samples = samples.to(device, non_blocking=True)
         targets = targets.to(device, non_blocking=True)
-        # print('samples', samples.shape, 'targets', targets.shape)
         if mixup_fn is not None:
             samples, targets = mixup_fn(samples, targets)
         if last_activation is not None:
             if last_activation == 'sigmoid':
                 last_activation = torch.nn.Sigmoid()
-        
-
-        
-        if torch.cuda.is_available():
-            with torch.cuda.amp.autocast():
-                outputs = model(samples)
-        else:
-        # Chạy mà không có autocast nếu không có GPU
+        with torch.cuda.amp.autocast():
             outputs = model(samples)
-            
-            # print('outputs', outputs.shape, 'targets', targets.shape)
-            # print(outputs.shape, targets.shape, torch.unique(targets))'
+            # print(targets.shape)
+            # print(outputs)
             if last_activation is not None:
                 outputs = last_activation(outputs)
             # print(outputs.size(), targets.size())
+            # print(outputs)
+            if (args.model == "mobilevit-small" or args.model == "mobilevit-x-small"):
+                outputs = outputs.logits
             loss = criterion(outputs, targets)
-
+           
         loss_value = loss.item()
 
         if not math.isfinite(loss_value):
@@ -88,8 +80,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         if (data_iter_step + 1) % accum_iter == 0:
             optimizer.zero_grad()
 
-        if torch.cuda.is_available():
-            torch.cuda.synchronize()
+        torch.cuda.synchronize()
 
         metric_logger.update(loss=loss_value)
         min_lr = 10.
@@ -132,15 +123,7 @@ def evaluate(data_loader, model, device):
         target = target.to(device, non_blocking=True)
 
         # compute output
-        #with torch.cuda.amp.autocast():
-            #output = model(images)
-            #loss = criterion(output, target)
-        if torch.cuda.is_available():
-            with torch.cuda.amp.autocast():
-                output = model(images)
-                loss = criterion(output, target)
-        else:
-            # Chạy mà không có autocast nếu không có GPU
+        with torch.cuda.amp.autocast():
             output = model(images)
             loss = criterion(output, target)
 
@@ -211,15 +194,13 @@ def evaluate_chestxray(data_loader, model, device, args):
         target = target.to(device, non_blocking=True)
 
         # compute output
-        if torch.cuda.is_available():
-            with torch.cuda.amp.autocast():
-                output = model(images)
-                print(output.shape)
-                loss = criterion(output, target)
-        else: 
+        with torch.cuda.amp.autocast():
             output = model(images)
-            print(output.shape)
+            if (args.model == "mobilevit-small" or args.model == "mobilevit-x-small"):
+                output = output.logits
+            # print(output.shape)
             loss = criterion(output, target)
+
 
         if args.dataset == 'covidx':
             acc1 = accuracy(output, target, topk=(1, ))[0]

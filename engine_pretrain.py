@@ -47,20 +47,7 @@ def train_one_epoch(model: torch.nn.Module,
         else:
             imgs = samples.to(device, non_blocking=True)
             heatmaps = None
-        #with torch.amp.autocast('cuda'):
-        #    if heatmaps is not None:
-        #        loss, _, _ = model(imgs, mask_ratio=args.mask_ratio, heatmaps=heatmaps)
-        #    else:
-        #        loss, _, _ = model(imgs, mask_ratio=args.mask_ratio)
-
-        if torch.cuda.is_available():
-            with torch.amp.autocast('cuda'):
-                if heatmaps is not None:
-                    loss, _, _ = model(imgs, mask_ratio=args.mask_ratio, heatmaps=heatmaps)
-                else:
-                    loss, _, _ = model(imgs, mask_ratio=args.mask_ratio)
-        else:
-            # Chạy mà không có autocast nếu không có GPU
+        with  torch.amp.autocast('cuda'):
             if heatmaps is not None:
                 loss, _, _ = model(imgs, mask_ratio=args.mask_ratio, heatmaps=heatmaps)
             else:
@@ -78,8 +65,7 @@ def train_one_epoch(model: torch.nn.Module,
         if (data_iter_step + 1) % accum_iter == 0:
             optimizer.zero_grad()
 
-        if torch.cuda.is_available():
-            torch.cuda.synchronize()
+        torch.cuda.synchronize()
 
         metric_logger.update(loss=loss_value)
 

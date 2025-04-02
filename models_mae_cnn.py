@@ -14,10 +14,12 @@ from functools import partial
 import torch
 import torch.nn as nn
 import timm
+# from ._preprocessing import preprocess_input
 
 from timm.models.vision_transformer import PatchEmbed, Block
 
 from util.pos_embed import get_2d_sincos_pos_embed
+import cv2
 import numpy as np
 import segmentation_models_pytorch as smp
 
@@ -32,7 +34,15 @@ class MaskedAutoencoderCNN(nn.Module):
         super().__init__()
         # --------------------------------------------------------------------------
         # MAE encoder specifics
-
+        # ''encoder_name = "convnext_base"#"resnet50"
+        # Tạo một encoder từ timm
+        # vit_models = [model for model in timm.list_models() if "comer" in model]
+        # print(vit_models)
+        # encoder = timm.create_model(encoder_name, pretrained=True, features_only=True)
+        # print("Encoder output channels:", encoder.feature_info.channels())
+        # print(encoder)
+        
+        # ''out_channels = encoder.feature_info.channels()  # Lấy thông tin kênh đầu ra từ encoder
         self.model = smp.__dict__[model_arch](
             encoder_name=encoder_name,        # choose encoder, e.g. mobilenet_v2 or efficientnet-b7
             encoder_weights=None,     # use `imagenet` pre-trained weights for encoder initialization
@@ -40,6 +50,7 @@ class MaskedAutoencoderCNN(nn.Module):
             classes=3,                      # model output channels (number of classes in your dataset)
         )
         
+        # self.model.set_in_channels(3)
         # self.model = timm.create_model(
         # model_name=encoder_name,
         # pretrained=True,
@@ -113,18 +124,19 @@ class MaskedAutoencoderCNN(nn.Module):
         mask: [N, L], 0 is keep, 1 is remove, 
         """
         target = imgs
+        print(target.shape,imgs.shape,pred.shape)
         # print(target.shape,pred.shape)
         loss = (pred - target) ** 2
+
         loss = loss.mean()
         # loss = (loss * mask).sum() / mask.sum()  # mean loss on removed patches
         return loss
 
     def forward(self, imgs, mask_ratio=0.75, heatmaps=None):
         imgs_masked, mask, ids_restore = self.random_masking(imgs, mask_ratio)
-        # print("note:",imgs.shape,imgs_masked.shape)
         pred = self.model(imgs_masked)
-        print(pred.shape, imgs_masked.shape)
         loss = self.forward_loss(imgs, pred, mask)
+        # print(pred.shape, tar)
         return loss, pred, mask
 
 

@@ -6,6 +6,7 @@ import torchvision.transforms.functional
 from PIL import Image, ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+import cv2
 import torch
 import torchvision.transforms as transforms
 import pandas as pd

@@ -34,6 +34,7 @@ from models_mae_cnn import MaskedAutoencoderCNN
 
 from engine_pretrain import train_one_epoch
 from util.dataloader_med import CheXpert, ChestX_ray14, MIMIC
+import cv2
 from util.custom_transforms import custom_train_transform
 from util.sampler import RASampler
 
@@ -200,7 +201,6 @@ def main(args):
         concat_datasets.append(dataset)
     # dataset_train = datasets.ImageFolder(os.path.join(args.data_path, 'train'), transform=transform_train)
     dataset_train = torch.utils.data.ConcatDataset(concat_datasets)
-    
 
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()
@@ -233,6 +233,7 @@ def main(args):
     )
 
     model = MaskedAutoencoderCNN(img_size=224, patch_size=16, model_arch='Unet', encoder_name=args.model)
+    print(model)
     model.to(device)
 
     model_without_ddp = model
