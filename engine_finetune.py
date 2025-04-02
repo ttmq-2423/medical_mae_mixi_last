@@ -55,7 +55,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         if last_activation is not None:
             if last_activation == 'sigmoid':
                 last_activation = torch.nn.Sigmoid()
-        with torch.cuda.amp.autocast():
+        with torch.autocast(device_type='cuda' if torch.cuda.is_available() else 'cpu', dtype=torch.float16):
             outputs = model(samples)
             # print(targets.shape)
             # print(outputs)
@@ -80,8 +80,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
         if (data_iter_step + 1) % accum_iter == 0:
             optimizer.zero_grad()
 
-        torch.cuda.synchronize()
-
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
         metric_logger.update(loss=loss_value)
         min_lr = 10.
         max_lr = 0.
@@ -123,7 +123,7 @@ def evaluate(data_loader, model, device):
         target = target.to(device, non_blocking=True)
 
         # compute output
-        with torch.cuda.amp.autocast():
+        with torch.autocast(device_type='cuda' if torch.cuda.is_available() else 'cpu', dtype=torch.float16):
             output = model(images)
             loss = criterion(output, target)
 
@@ -194,7 +194,7 @@ def evaluate_chestxray(data_loader, model, device, args):
         target = target.to(device, non_blocking=True)
 
         # compute output
-        with torch.cuda.amp.autocast():
+        with torch.autocast(device_type='cuda' if torch.cuda.is_available() else 'cpu', dtype=torch.float16):
             output = model(images)
             if (args.model == "mobilevit-small" or args.model == "mobilevit-x-small"):
                 output = output.logits

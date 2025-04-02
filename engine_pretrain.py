@@ -47,7 +47,7 @@ def train_one_epoch(model: torch.nn.Module,
         else:
             imgs = samples.to(device, non_blocking=True)
             heatmaps = None
-        with  torch.amp.autocast('cuda'):
+        with torch.autocast(device_type='cuda' if torch.cuda.is_available() else 'cpu', dtype=torch.float16):
             if heatmaps is not None:
                 loss, _, _ = model(imgs, mask_ratio=args.mask_ratio, heatmaps=heatmaps)
             else:
@@ -65,7 +65,8 @@ def train_one_epoch(model: torch.nn.Module,
         if (data_iter_step + 1) % accum_iter == 0:
             optimizer.zero_grad()
 
-        torch.cuda.synchronize()
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
 
         metric_logger.update(loss=loss_value)
 
