@@ -1,0 +1,14 @@
+pytorch
+torchvision
+scikit-learn
+pandas
+numpy
+py-opencv 
+opencv
+pillow
+tensorboard
+matplotlib
+medpy
+tqdm
+segmentation-models-pytorch
+timm

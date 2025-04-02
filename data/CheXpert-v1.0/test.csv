@@ -1,0 +1,17 @@
+Path,No Finding,Enlarged Cardiomediastinum,Cardiomegaly,Lung Opacity,Lung Lesion,Edema,Consolidation,Pneumonia,Atelectasis,Pneumothorax,Pleural Effusion,Pleural Other,Fracture,Support Devices
+CheXpert-v1.0/test/patient64741/study1/view1_frontal.jpg,0,1,1,1,0,0,0,0,0,0,0,0,0,1
+CheXpert-v1.0/test/patient64742/study1/view1_frontal.jpg,0,1,0,1,0,0,0,0,1,0,0,0,0,0
+CheXpert-v1.0/test/patient64743/study1/view1_frontal.jpg,0,1,1,1,0,1,0,0,1,0,0,0,0,0
+CheXpert-v1.0/test/patient64744/study1/view1_frontal.jpg,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+CheXpert-v1.0/test/patient64744/study1/view2_lateral.jpg,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+CheXpert-v1.0/test/patient64744/study1/view3_lateral.jpg,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+CheXpert-v1.0/test/patient64745/study1/view1_frontal.jpg,0,1,1,1,1,0,0,0,1,0,1,0,0,1
+CheXpert-v1.0/test/patient64745/study1/view2_lateral.jpg,0,1,1,1,1,0,0,0,1,0,1,0,0,1
+CheXpert-v1.0/test/patient64746/study1/view1_frontal.jpg,0,0,0,1,0,0,0,0,1,0,1,0,0,1
+CheXpert-v1.0/test/patient64747/study1/view1_frontal.jpg,0,0,0,1,1,0,1,0,0,0,1,0,0,1
+CheXpert-v1.0/test/patient64747/study1/view2_lateral.jpg,0,0,0,1,1,0,1,0,0,0,1,0,0,1
+CheXpert-v1.0/test/patient64748/study1/view1_frontal.jpg,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+CheXpert-v1.0/test/patient64748/study1/view2_lateral.jpg,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+CheXpert-v1.0/test/patient64749/study1/view1_frontal.jpg,0,1,1,1,0,1,0,0,0,0,0,0,0,1
+CheXpert-v1.0/test/patient64750/study1/view1_frontal.jpg,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+CheXpert-v1.0/test/patient64750/study1/view2_lateral.jpg,1,0,0,0,0,0,0,0,0,0,0,0,0,0
